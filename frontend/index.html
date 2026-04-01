@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4fc3f7">
+  <link rel="manifest" href="/frontend/manifest.json">
+  <title>Agentes IA</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+    }
+    header {
+      background: #4fc3f7;
+      color: #fff;
+      padding: 1em;
+      text-align: center;
+    }
+    #app {
+      width: 90%;
+      margin: auto;
+      padding: 2em;
+    }
+    button {
+      background-color: #4fc3f7;
+      color: #fff;
+      border: none;
+      padding: 0.5em 1em;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #358fba;
+    }
+    #agents {
+      margin-top: 2em;
+    }
+    .agent {
+      padding: 1em;
+      margin: 0.5em 0;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Agentes IA</h1>
+  </header>
+  <div id="app">
+    <input type="text" id="newAgentName" placeholder="Nombre del nuevo agente">
+    <button onclick="createAgent()">Crear Agente</button>
+    <div id="agents"></div>
+  </div>
+  <script>
+    async function fetchAgents() {
+      const res = await fetch('/api/agents');
+      const data = await res.json();
+      const agentsDiv = document.getElementById('agents');
+      agentsDiv.innerHTML = '';
+      data.agents && Object.values(data.agents).forEach(agent => {
+        const agentDiv = document.createElement('div');
+        agentDiv.className = 'agent';
+        agentDiv.textContent = `Agente: ${agent.name}`;
+        agentsDiv.appendChild(agentDiv);
+      });
+    }
+
+    async function createAgent() {
+      const newAgentName = document.getElementById('newAgentName').value;
+      if (!newAgentName) return alert('Ingresa un nombre para el agente');
+      await fetch('/api/agents', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name: newAgentName})
+      });
+      fetchAgents();
+    }
+
+    fetchAgents();
+  </script>
+</body>
+</html>
